@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>GCP App</title>
+
+    <!-- Bootstrap -->
+    <link href="../static/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../static/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../static/vendors/nprogress/nprogress.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="../static/build/css/custom.min.css" rel="stylesheet">
+
+    <link href="../static/vendors/select2/dist/css/select2.min.css" rel="stylesheet">
+
+
+
+<style>
+
+.link {
+    stroke: #666;
+    opacity: 0.7;
+    stroke-width: 1.5px;
+}
+.node circle {
+    stroke: #fff;
+    opacity: 0.4;
+    stroke-width: 1.5px;
+}
+text {
+    font: 15px serif;
+    opacity: 0.8;
+    pointer-events: none;
+    }
+
+</style>
+
+
+
+  </head>
+
+  <body class="nav-sm">
+    <div class="container body">
+      <div class="main_container">
+        <div class="col-md-3 left_col">
+          <div class="left_col scroll-view">
+            <div class="navbar nav_title" style="border: 0;">
+              <a href="/" class="site_title"><i class="fa fa-medkit"></i> <span>Healthcare App (built by GCP)</span></a>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <br />
+
+            <!-- sidebar menu -->
+            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+
+              <div class="menu_section">
+                <h3>Categories</h3>
+                <ul class="nav side-menu">
+                  <li><a href="/"><i class="fa fa-search"></i> SEARCH </a></li>
+                  <li><a href="/manual"><i class="fa fa-edit"></i> MANUAL </a></li>
+                  <li><a href="/network"><i class="fa fa-share-alt"></i>NETWORK</a></li>
+                  <li><a href="/report"><i class="fa fa-bar-chart"></i>REPORT</a></li>
+                  <li><a href="/dialog"><i class="fa fa-comments-o"></i>DIALOG</a></li>	       	
+	          <li><a href="/image"><i class="fa fa-file-image-o"></i> IMAGE </a></li>
+		</ul>
+              </div>
+
+            </div>
+            <!-- /sidebar menu -->
+
+            <!-- /menu footer buttons -->
+            <!--
+            <div class="sidebar-footer hidden-small">
+              <a data-toggle="tooltip" data-placement="top" title="Settings">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+                <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="Lock">
+                <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="Logout">
+                <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+              </a>
+            </div>
+            -->
+            <!-- /menu footer buttons -->
+          </div>
+        </div>
+
+        <!-- top navigation -->
+        <div class="top_nav">
+	  <h2>&nbsp;Healthcare App</h2>
+          <div class="nav_menu">
+            <nav>
+              <div class="nav toggle">
+                <!--
+                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                -->
+              </div>
+
+              <ul class="nav navbar-nav navbar-right">
+                <li class="">
+                  <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-user"></i>&nbsp;&nbsp;{{ user }}&nbsp;<span class="fa fa-angle-down"></span>
+                  </a>
+		  <!--
+                  <ul class="dropdown-menu dropdown-usermenu pull-right">
+                    <li><a href="/logout">Logout</a></li>
+                  </ul>
+		  -->
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <!-- /top navigation -->
+
+
+
+
+
+
+
+        <!-- page content -->
+        <div class="right_col" role="main">
+          <div class="">
+            <div class="page-title">
+              <div class="title_left">
+                <!-- <h3>ZHeader</h3> -->
+              </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+
+
+            <center>
+	    <div id="viz"></div>
+	    </center>
+
+
+
+          </div>
+        </div>
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <footer>
+          <div class="pull-right">
+            Z2019
+          </div>
+          <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="../static/vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../static/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="../static/vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="../static/vendors/nprogress/nprogress.js"></script>
+    
+    <!-- Custom Theme Scripts -->
+    <script src="../static/build/js/custom.min.js"></script>
+
+
+
+
+
+
+
+<script src="https://d3js.org/d3.v3.min.js"></script>
+
+
+
+
+<script>
+
+
+var links = [{"source": "crestor", "target": "physical"}, {"source": "crestor", "target": "friend"}, {"source": "crestor", "target": "dr"}, {"source": "crestor", "target": "give"}, {"source": "crestor", "target": "alot"}, {"source": "lipitor", "target": "work"}, {"source": "lipitor", "target": "give"}, {"source": "lipitor", "target": "etc"}, {"source": "lipitor", "target": "blood_work"}, {"source": "lipitor", "target": "place"}, {"source": "zocor", "target": "80_mg"}, {"source": "zocor", "target": "20_mg"}, {"source": "zocor", "target": "place"}, {"source": "zocor", "target": "1/2"}, {"source": "zocor", "target": "cardiologist"}, {"source": "zetia", "target": "80_mg"}, {"source": "zetia", "target": "stuff"}, {"source": "zetia", "target": "decrease"}, {"source": "zetia", "target": "daily"}, {"source": "zetia", "target": "similar"}, {"source": "simvastatin", "target": "80_mg"}, {"source": "simvastatin", "target": "reading"}, {"source": "simvastatin", "target": "daily"}, {"source": "simvastatin", "target": "agree"}, {"source": "simvastatin", "target": "past"}, {"source": "muscle", "target": "hip"}, {"source": "muscle", "target": "joint"}, {"source": "muscle", "target": "calf"}, {"source": "muscle", "target": "knee"}, {"source": "muscle", "target": "shoulder"}, {"source": "arm", "target": "left"}, {"source": "arm", "target": "neck"}, {"source": "arm", "target": "shoulder"}, {"source": "arm", "target": "knee"}, {"source": "arm", "target": "severe"}, {"source": "doctor", "target": "mind"}, {"source": "doctor", "target": "need"}, {"source": "doctor", "target": "different"}, {"source": "doctor", "target": "patient"}, {"source": "doctor", "target": "way"}, {"source": "cholesterol", "target": "number"}, {"source": "cholesterol", "target": "180"}, {"source": "cholesterol", "target": "good"}, {"source": "cholesterol", "target": "200"}, {"source": "cholesterol", "target": "range"}, {"source": "triglyceride", "target": "range"}, {"source": "triglyceride", "target": "high"}, {"source": "triglyceride", "target": "lower"}, {"source": "triglyceride", "target": "200"}, {"source": "triglyceride", "target": "good"}, {"source": "sleep", "target": "turn"}, {"source": "sleep", "target": "wake"}, {"source": "sleep", "target": "body"}, {"source": "sleep", "target": "burn"}, {"source": "sleep", "target": "tired"}, {"source": "night", "target": "bed"}, {"source": "night", "target": "sensation"}, {"source": "night", "target": "body"}, {"source": "night", "target": "burn"}, {"source": "night", "target": "wake"}, {"source": "fatigue", "target": "memory_loss"}, {"source": "fatigue", "target": "constant"}, {"source": "fatigue", "target": "constipation"}, {"source": "fatigue", "target": "trouble"}, {"source": "fatigue", "target": "difficulty"}, {"source": "symptom", "target": "memory_loss"}, {"source": "symptom", "target": "stop"}, {"source": "symptom", "target": "talk"}, {"source": "symptom", "target": "relief"}, {"source": "symptom", "target": "difficulty"}, {"source": "experience", "target": "difficulty"}, {"source": "experience", "target": "memory_loss"}, {"source": "experience", "target": "chest"}, {"source": "experience", "target": "dizziness"}, {"source": "experience", "target": "breath"}, {"source": "develop", "target": "have"}, {"source": "develop", "target": "joint_pain"}, {"source": "develop", "target": "painful"}, {"source": "develop", "target": "quit"}, {"source": "develop", "target": "end"}, {"source": "no", "target": "risk"}, {"source": "no", "target": "diet_exercise"}, {"source": "no", "target": "happy"}, {"source": "no", "target": "benefit"}, {"source": "no", "target": "200"}, {"source": "left", "target": "right"}, {"source": "left", "target": "shoulder"}, {"source": "left", "target": "upper"}, {"source": "left", "target": "numbness"}, {"source": "left", "target": "neck"}];
+var nodes = {}
+
+// Compute the distinct nodes from the links.
+links.forEach(function (link) {
+    link.source = nodes[link.source] || (nodes[link.source] = {
+        name: link.source
+    });
+    link.target = nodes[link.target] || (nodes[link.target] = {
+        name: link.target
+    });
+    link.value = +link.value;
+});
+
+var width  = 900
+    height = 700;
+
+var force = d3.layout.force()
+    .nodes(d3.values(nodes))
+    .links(links)
+    .size([width, height])
+    .linkDistance(50)
+    .charge(-200)
+    .on("tick", tick)
+    .start();
+
+var svg = d3.select("#viz").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var link = svg.selectAll(".link")
+    .data(force.links())
+    .enter().append("line")
+    .attr("class", "link");
+
+var node = svg.selectAll(".node")
+    .data(force.nodes())
+    .enter().append("g")
+    .attr("class", "node")
+    .on("mouseover", mouseover)
+    .on("mouseout", mouseout)
+    .on("click", click)
+    .on("dblclick", dblclick)
+    .call(force.drag);
+
+node.append("circle")
+    .attr("r", 10)
+    .style("fill", "#0606FD");
+
+node.append("text")
+    .attr("x", 14)
+    .attr("dy", ".35em")
+    .style("fill", "#000")
+    .text(function (d) {
+    return d.name;
+});
+
+function tick() {
+    link.attr("x1", function (d) {
+        return d.source.x;
+    })
+        .attr("y1", function (d) {
+        return d.source.y;
+    })
+        .attr("x2", function (d) {
+        return d.target.x;
+    })
+        .attr("y2", function (d) {
+        return d.target.y;
+    });
+
+    node.attr("transform", function(d) {
+    return "translate(" + (d.x = Math.max(10, Math.min(width - 10, d.x))) + "," 
+    + (d.y = Math.max(10, Math.min(height - 10, d.y))) + ")"
+    });
+
+}
+
+function mouseover() {
+    d3.select(this).select("circle").transition()
+        .duration(750)
+        .attr("r", 16);
+}
+
+function mouseout() {
+    d3.select(this).select("circle").transition()
+        .duration(750)
+        .attr("r", 12);
+}
+// action to take on mouse click
+function click() {
+    d3.select(this).select("text").transition()
+        .duration(750)
+        .attr("x", 22)
+        .style("stroke-width", ".5px")
+        .style("opacity", 1)
+        .style("fill", "#E34A33")
+        .style("font", "17.5px serif");
+    d3.select(this).select("circle").transition()
+        .duration(750)
+        .style("fill", "#E34A33")
+        .attr("r", 16)
+}
+
+// action to take on mouse double click
+function dblclick() {
+    d3.select(this).select("circle").transition()
+        .duration(750)
+        .attr("r", 12)
+        .style("fill", "#E34A33");
+    d3.select(this).select("text").transition()
+        .duration(750)
+        .attr("x", 14)
+        .style("stroke", "none")
+        .style("fill", "#E34A33")
+        .style("stroke", "none")
+        .style("opacity", 0.6)
+        .style("font", "14px serif");
+}
+
+
+</script>
+
+
+
+
+
+
+  </body>
+</html>
