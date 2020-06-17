@@ -44,6 +44,7 @@
                 <h3>Categories</h3>
                 <ul class="nav side-menu">
                   <li><a href="/"><i class="fa fa-play-circle"></i> SPEECH </a></li>
+                  <li><a href="/dropzone"><i class="fa fa-file-image-o"></i>DROPZONE</a></li>	
                   <li><a href="/dialog"><i class="fa fa-comments-o"></i>DIALOG</a></li>		
 		        </ul>
               </div>
@@ -107,19 +108,52 @@
             <form action="/" method="POST">
 
                 <div class="row">
-                    <div class="col-md-2 col-xs-1 "></div>
+                    <div class="col-md-4 col-xs-1 "></div>
 
-                    <div class="col-md-8 col-xs-10 form-group">
+                    <div class="col-md-4 col-xs-10 form-group">
                         <!--
                         <input name="search_term" type="text" class="form-control" placeholder="Search for Medication, Symptoms, Side Effects, ...">
                         -->
 			            <center>
-			            <textarea rows="4" class="form-control" name="text">Type in your custom text message here.</textarea> 
+			            <textarea rows="6" class="form-control" name="text">{{ text }}</textarea> 
 		                </center>
 		            </div>
 
-                    <div class="col-md-2 col-xs-1 "></div>
+                    <div class="col-md-4 col-xs-1 "></div>
 
+                </div>
+
+                <br>
+
+                <div class="row">
+                    <div class="col-md-5 col-xs-1 "></div>
+                    <div class="col-md-2 col-xs-10">
+                        <select name="language" id="language" class="form-control">
+                            <option value = "" disabled>Choose Language</option>
+                            <option value='en-AU' {% if language == 'en-AU' %}selected{% endif %}>English (Australia)</option>
+                            <option value='en-IN' {% if language == 'en-IN' %}selected{% endif %}>English (India)</option>
+                            <option value='en-GB' {% if language == 'en-GB' %}selected{% endif %}>English (UK)</option>
+                            <option value='en-US' {% if language == 'en-US' %}selected{% endif %}>English (US)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5 col-xs-1 "></div>
+                </div>
+
+                <center><a href="https://cloud.google.com/text-to-speech/docs/voices" target="_blank">Supported Voices</a></center>
+
+                <br>
+
+                <div class="row">
+                    <div class="col-md-5 col-xs-1 "></div>
+                    <div class="col-md-2 col-xs-10">
+                        <select name="gender" id="gender" class="form-control">
+                            <option value = "" disabled>Choose Gender</option>
+                            <option value='female' {% if gender == 'female' %}selected{% endif %}>Female</option>
+                            <option value='male'   {% if gender == 'male' %}  selected{% endif %}>Male</option>
+                            <!-- <option value='neutral'>Neutral</option> -->
+                        </select>
+                    </div>
+                    <div class="col-md-5 col-xs-1 "></div>
                 </div>
 
                 <br>
@@ -133,8 +167,6 @@
                 </div>
 
 	        </form>
-
-
 
 
 	        <br><br>
@@ -165,7 +197,7 @@
             -->
 
 
-            <br><br>
+            <br>
 
             <center>
                 <audio controls>

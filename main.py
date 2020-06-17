@@ -7,9 +7,7 @@ import datetime,time
 import html
 import six
 import base64
-from google.cloud import storage, bigquery, automl_v1beta1
-from google.cloud.automl_v1beta1.proto import service_pb2
-import google.cloud.dlp
+from google.cloud import storage, bigquery
 from google.cloud import texttospeech
 
 #os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/dzaratsian/creds.json"
@@ -270,18 +268,38 @@ def get_prediction(content, project_id, model_id):
     return request  # waits till request is returned
 
 
-def gcp_text_to_speech(text):
+def gcp_text_to_speech(text, gender='neutral', language='en-US', standard_or_wavenet='wavenet' ):
     # Instantiates a client
     client = texttospeech.TextToSpeechClient()
+    
+    language_key = '{}-{}-{}'.format(language, standard_or_wavenet.title(), gender.lower())
+    language_key_map = {
+        'en-AU-Wavenet-female': 'en-AU-Wavenet-A',
+        'en-AU-Wavenet-male':   'en-AU-Wavenet-B',
+        'en-IN-Wavenet-female': 'en-IN-Wavenet-A',
+        'en-IN-Wavenet-male':   'en-IN-Wavenet-B',
+        'en-GB-Wavenet-female': 'en-GB-Wavenet-A',
+        'en-GB-Wavenet-male':   'en-GB-Wavenet-B',
+        'en-US-Wavenet-female': 'en-US-Wavenet-C',
+        'en-US-Wavenet-male':   'en-US-Wavenet-B',
+    }
+    
+    ssml_gender_map = {
+        'neural':   texttospeech.enums.SsmlVoiceGender.NEUTRAL,
+        'male':     texttospeech.enums.SsmlVoiceGender.MALE,
+        'female':   texttospeech.enums.SsmlVoiceGender.FEMALE
+    }
     
     # Set the text input to be synthesized
     synthesis_input = texttospeech.types.SynthesisInput(text=text)
     
     # Build the voice request, select the language code ("en-US") and the ssml
     # voice gender ("neutral")
+    print('[ INFO ] {} {}'.format(language, language_key ))
     voice = texttospeech.types.VoiceSelectionParams(
-        language_code='en-US',
-        ssml_gender=texttospeech.enums.SsmlVoiceGender.NEUTRAL)
+        language_code=  language,
+        name=           language_key_map[language_key]) #,
+        #ssml_gender=    ssml_gender_map[gender])
     
     # Select the type of audio file you want returned
     audio_config = texttospeech.types.AudioConfig(audio_encoding=texttospeech.enums.AudioEncoding.MP3)
@@ -313,6 +331,45 @@ def gcp_storage_upload_string(source_string, bucket_name, blob_name):
         print('[ ERROR ] {}'.format(e))
 
 
+
+
+blacklist = [   '[document]',   'noscript', 'header',   'html', 'meta', 'head','input', 'script',   ]
+
+
+def epub2thtml(epub_path):
+    book = epub.read_epub(epub_path)
+    chapters = []
+    for item in book.get_items():
+        if item.get_type() == ebooklib.ITEM_DOCUMENT:
+            chapters.append(item.get_content())
+    return chapters
+
+
+def chap2text(chap):
+    output = ''
+    soup = BeautifulSoup(chap, 'html.parser')
+    text = soup.find_all(text=True)
+    for t in text:
+        if t.parent.name not in blacklist:
+            output += '{} '.format(t)
+    return output
+
+
+def thtml2ttext(thtml):
+    Output = []
+    for html in thtml:
+        text =  chap2text(html)
+        Output.append(text)
+    return Output
+
+
+def epub2text(epub_path):
+    chapters = epub2thtml(epub_path)
+    ttext = thtml2ttext(chapters)
+    return ttext
+
+
+
 ############################################################
 #
 #   Home
@@ -328,13 +385,36 @@ def tts():
     datetimestamp = str(datetime.datetime.now())
     
     if request.method == 'GET':
-        return render_template('tts.html', user=user)
+        text = '''
+Nicolo Machiavelli was born at Florence on 3rd May 1469. He was the
+second son of Bernardo di Nicolo Machiavelli, a lawyer of some repute,
+and of Bartolommea di Stefano Nelli, his wife. Both parents were members
+of the old Florentine nobility.
+
+His life falls naturally into three periods, each of which singularly
+enough constitutes a distinct and important era in the history of
+Florence. His youth was concurrent with the greatness of Florence as an
+Italian power under the guidance of Lorenzo de' Medici, Il Magnifico.
+The downfall of the Medici in Florence occurred in 1494, in which year
+Machiavelli entered the public service. During his official career
+Florence was free under the government of a Republic, which lasted
+until 1512, when the Medici returned to power, and Machiavelli lost his
+office. The Medici again ruled Florence from 1512 until 1527, when they
+were once more driven out. This was the period of Machiavelli's literary
+activity and increasing influence; but he died, within a few weeks of
+the expulsion of the Medici, on 22nd June 1527, in his fifty-eighth
+year, without having regained office.
+        '''
+        return render_template('tts.html', user=user, text=text, language='en-US', gender='female')
     
     if request.method == 'POST':
         text_blob = request.form['text']
-        audio_content = gcp_text_to_speech(text_blob)
+        language  = request.form['language']
+        gender    = request.form['gender']
+        
+        audio_content = gcp_text_to_speech(text=text_blob, gender=gender, language=language, standard_or_wavenet='wavenet' )
         gcp_storage_upload_string(audio_content, bucket_name='z-speech-audio-files', blob_name='tts_output.mp3')
-        return render_template('tts.html', user=user)
+        return render_template('tts.html', user=user, text=text_blob, language=language, gender=gender)
 
 
 ############################################################
@@ -353,6 +433,35 @@ def dialog():
     
     if request.method == 'GET':
         return render_template('dialog.html', user=user)
+
+
+
+############################################################
+#
+#   eBook Processing
+#
+############################################################
+@app.route('/dropzone', methods = ['GET','POST'])
+def dropzone():
+    
+    try:
+        user = request.headers['X-Goog-Authenticated-User-Email'].split(':')[-1]
+    except:
+        user = 'dzaratsian@google.com'
+    datetimestamp = str(datetime.datetime.now())
+    
+    if request.method == 'GET':
+        return render_template('dropzone.html', user=user)
+    
+    elif request.method == 'POST':
+        
+        img = request.files['image']
+        print('[zinfo] {}'.format(type(img)))
+        print('[zinfo] {}'.format(str(img)))
+        
+        return render_template('dropzone.html', user=user, img=img_out, prediction=prediction)
+
+
 
 
 ############################################################

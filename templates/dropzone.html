@@ -46,13 +46,10 @@
               <div class="menu_section">
                 <h3>Categories</h3>
                 <ul class="nav side-menu">
-                  <li><a href="/"><i class="fa fa-search"></i> SEARCH </a></li>
-                  <li><a href="/manual"><i class="fa fa-edit"></i> MANUAL </a></li>
-                  <li><a href="/network"><i class="fa fa-share-alt"></i>NETWORK</a></li>
-                  <li><a href="/report"><i class="fa fa-bar-chart"></i>REPORT</a></li>
-                  <li><a href="/dialog"><i class="fa fa-comments-o"></i>DIALOG</a></li>
-                  <li><a href="/image"><i class="fa fa-file-image-o"></i> IMAGE </a></li>
-		</ul>
+                  <li><a href="/"><i class="fa fa-play-circle"></i> SPEECH </a></li>
+                  <li><a href="/dropzone"><i class="fa fa-file-image-o"></i>DIALOG</a></li>	
+                  <li><a href="/dialog"><i class="fa fa-comments-o"></i>DIALOG</a></li>		
+		        </ul>
               </div>
 
             </div>
@@ -62,7 +59,7 @@
 
         <!-- top navigation -->
         <div class="top_nav">
-	  <h2>&nbsp;Healthcare App</h2>
+	  <h2>&nbsp;Multimedia AI App</h2>
           <div class="nav_menu">
             <nav>
               <div class="nav toggle">
@@ -114,7 +111,7 @@
               <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>Image Analysis</h2>
+                    <h2>Audio Analysis</h2>
                     <ul class="nav navbar-right panel_toolbox">
                     </ul>
                     <div class="clearfix"></div>
@@ -122,24 +119,23 @@
              
 
 
-<form action="/image" method="POST" enctype="multipart/form-data" >
+<form action="/dropzone" method="POST" enctype="multipart/form-data" >
     <br><br>
     <center>
     <label class="btn btn-default btn-file">
-        Select X-Ray Image <input <input type="file" name="image" style="display: none;">
+        Select eBook <input <input type="file" name="image" style="display: none;">
     </label>
     </center>
     
     <br>
 
     <center>
-	<input type="submit" value="Get Diagnosis" class="btn btn-primary">
+	<input type="submit" value="Convert to Audio" class="btn btn-primary">
     </center>
     <br><br>
 </form>
 
 
-<b>Download sample X-Ray images for testing: </b> &nbsp;<a href="../static/images/xray1.jpg" download>xray1.jpg</a>, &nbsp;<a href="../static/images/xray2.jpg" download>xray2.jpg</a>, &nbsp;<a href="../static/images/xray3.jpg" download>xray3.jpg</a>
 <br>		    
                   </div>
                 </div>
