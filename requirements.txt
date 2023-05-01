@@ -1,4 +1,4 @@
-flask==1.0.2
+flask==2.3.2
 requests==2.23.0
 google-cloud-storage==1.13.2
 google-cloud-bigquery==1.9.0
