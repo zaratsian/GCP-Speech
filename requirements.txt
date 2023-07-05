@@ -5,7 +5,7 @@ google-cloud-bigquery==1.9.0
 google-cloud-language==1.1.1
 #google-cloud-dlp==0.10.0
 #google-cloud-automl==0.2.0
-grpcio==1.19.0
+grpcio==1.53.0
 #gensim==3.7.1
 google-cloud-texttospeech==2.0.0
 
